@@ -1,0 +1,3 @@
+1;Ion;Liviu Rebreanu;1920;Literatura;false
+2;Java pentru incepatori;Andrei Popescu;2022;Informatica;true
+3;Morometii;Marin Preda;1955;Literatura;true

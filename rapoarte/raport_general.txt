@@ -1,0 +1,17 @@
+RAPORT GENERAL BIBLIOTECA
+============================
+Total carti: 3
+Carti disponibile: 2
+Carti imprumutate: 1
+
+CARTI PE PERIOADE
+Inainte de 1900: 0
+1900-1949: 1
+1950-1999: 1
+2000-prezent: 1
+
+CARTI PE CATEGORII
+Informatica | Disponibile: 1 | Imprumutate: 0
+Literatura | Disponibile: 1 | Imprumutate: 1
+
+Total imprumuturi inregistrate: 1

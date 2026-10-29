@@ -1,0 +1,6 @@
+RAPORT CARTI DUPA AUTOR
+Autor cautat: liviu rebreanu
+-----------------------------
+ID: 1 | Titlu: Ion | Autor: Liviu Rebreanu | An: 1920 | Categorie: Literatura | Stare: Imprumutata
+-----------------------------
+Total carti gasite: 1

@@ -1,0 +1,7 @@
+RAPORT CARTI DUPA CATEGORIE
+Categorie: literatura
+-----------------------------
+ID: 1 | Titlu: Ion | Autor: Liviu Rebreanu | An: 1920 | Categorie: Literatura | Stare: Imprumutata
+ID: 3 | Titlu: Morometii | Autor: Marin Preda | An: 1955 | Categorie: Literatura | Stare: Disponibila
+-----------------------------
+Total carti gasite: 2
