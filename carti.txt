@@ -1,3 +1,5 @@
 1;Ion;Liviu Rebreanu;1920;Literatura;false
 2;Java pentru incepatori;Andrei Popescu;2022;Informatica;true
 3;Morometii;Marin Preda;1955;Literatura;true
+4;Enigma Otiliei;George Calinescu;1938;Roman;true
+5;Invitatie la vals;Mihail Drumes;1936;Dragoste;true

@@ -1,46 +1,38 @@
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
- * Clasa Statistici realizeaza prelucrarea
- * datelor bibliotecii folosind vectori
- * si matrici de tip int.
+ * Clasa Statistici calculeaza informatii
+ * despre cartile din biblioteca.
  */
 public class Statistici {
 
     /**
      * Afiseaza statisticile bibliotecii.
+     *
+     * @param biblioteca biblioteca analizata
      */
     public static void afiseazaStatistici(
             Biblioteca biblioteca) {
 
         ArrayList<Carte> carti = biblioteca.getCarti();
 
-        int total = carti.size();
         int disponibile = 0;
         int imprumutate = 0;
 
-        // Numararea cartilor dupa disponibilitate
+        // Vector cu numarul cartilor pe perioade
+        int[] cartiPePerioade = new int[4];
+
         for (Carte carte : carti) {
+
             if (carte.isDisponibila()) {
                 disponibile++;
             } else {
                 imprumutate++;
             }
-        }
 
-        System.out.println("\n===== STATISTICI BIBLIOTECA =====");
-        System.out.println("Total carti: " + total);
-        System.out.println("Carti disponibile: " + disponibile);
-        System.out.println("Carti imprumutate: " + imprumutate);
-
-        // PRIMUL MASIV: vector de tip int[]
-        // Grupeaza cartile dupa perioada publicarii
-        int[] cartiPePerioade = new int[4];
-
-        for (Carte carte : carti) {
             int an = carte.getAnPublicare();
 
             if (an < 1900) {
@@ -54,15 +46,26 @@ public class Statistici {
             }
         }
 
-        System.out.println("\n--- CARTI PE PERIOADE ---");
-        System.out.println("Inainte de 1900: " +
-                cartiPePerioade[0]);
-        System.out.println("1900-1949: " +
-                cartiPePerioade[1]);
-        System.out.println("1950-1999: " +
-                cartiPePerioade[2]);
-        System.out.println("2000-prezent: " +
-                cartiPePerioade[3]);
+        System.out.println(
+                "\n===== STATISTICI BIBLIOTECA =====");
+
+        System.out.println("Total carti: " + carti.size());
+        System.out.println("Disponibile: " + disponibile);
+        System.out.println("Imprumutate: " + imprumutate);
+
+        System.out.println("\nCARTI PE PERIOADE:");
+
+        String[] perioade = {
+                "Inainte de 1900",
+                "1900-1949",
+                "1950-1999",
+                "2000-prezent"
+        };
+
+        for (int i = 0; i < cartiPePerioade.length; i++) {
+            System.out.println(
+                    perioade[i] + ": " + cartiPePerioade[i]);
+        }
 
         // Identificam categoriile distincte
         HashSet<String> categoriiSet = new HashSet<>();
@@ -76,51 +79,42 @@ public class Statistici {
 
         Collections.sort(categorii);
 
-        // AL DOILEA MASIV: matrice de tip int[][]
-        // Coloana 0 = disponibile
-        // Coloana 1 = imprumutate
-        int[][] statisticiCategorii =
+        // Matrice:
+        // coloana 0 = carti disponibile
+        // coloana 1 = carti imprumutate
+        int[][] matrice =
                 new int[categorii.size()][2];
 
         for (Carte carte : carti) {
 
             int index = categorii.indexOf(
-                    carte.getCategorie()
-            );
+                    carte.getCategorie());
 
             if (carte.isDisponibila()) {
-                statisticiCategorii[index][0]++;
+                matrice[index][0]++;
             } else {
-                statisticiCategorii[index][1]++;
+                matrice[index][1]++;
             }
         }
 
-        System.out.println("\n--- CARTI PE CATEGORII ---");
+        System.out.println("\nCARTI PE CATEGORII:");
 
         for (int i = 0; i < categorii.size(); i++) {
 
-            int nrDisponibile =
-                    statisticiCategorii[i][0];
-
-            int nrImprumutate =
-                    statisticiCategorii[i][1];
+            System.out.println(
+                    "Categorie: " + categorii.get(i));
 
             System.out.println(
-                    "Categorie: " + categorii.get(i)
-            );
+                    "Disponibile: " + matrice[i][0]);
 
             System.out.println(
-                    "  Disponibile: " + nrDisponibile
-            );
+                    "Imprumutate: " + matrice[i][1]);
 
             System.out.println(
-                    "  Imprumutate: " + nrImprumutate
-            );
+                    "Total: " +
+                            (matrice[i][0] + matrice[i][1]));
 
-            System.out.println(
-                    "  Total: " +
-                            (nrDisponibile + nrImprumutate)
-            );
+            System.out.println("-------------------");
         }
     }
 }

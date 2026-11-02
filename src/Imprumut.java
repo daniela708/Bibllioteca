@@ -2,15 +2,11 @@
 import java.time.LocalDate;
 
 /**
- * Clasa Imprumut reprezinta un imprumut
- * efectuat de un cititor al bibliotecii.
- *
- * Contine informatii despre cartea imprumutata,
- * cititor, data imprumutului si data returnarii.
+ * Clasa Imprumut reprezinta imprumutarea
+ * unei carti de catre un cititor.
  */
 public class Imprumut {
 
-    // Atributele clasei
     private int idImprumut;
     private int idCarte;
     private String numeCititor;
@@ -18,46 +14,31 @@ public class Imprumut {
     private LocalDate dataReturnare;
 
     /**
-     * Constructor pentru inregistrarea unui imprumut.
-     *
-     * @param idImprumut identificatorul imprumutului
-     * @param idCarte identificatorul cartii
-     * @param numeCititor numele persoanei care imprumuta
-     * @param dataImprumut data efectuarii imprumutului
-     * @throws DateInvalideException daca datele sunt invalide
+     * Constructor pentru un imprumut nou.
      */
     public Imprumut(int idImprumut, int idCarte,
                     String numeCititor,
                     LocalDate dataImprumut) {
 
-        if (idImprumut <= 0) {
+        if (idImprumut <= 0 || idCarte <= 0) {
             throw new DateInvalideException(
-                    "ID-ul imprumutului trebuie sa fie pozitiv!"
-            );
+                    "ID-urile trebuie sa fie pozitive!");
         }
 
-        if (idCarte <= 0) {
+        if (numeCititor == null ||
+                numeCititor.isBlank()) {
             throw new DateInvalideException(
-                    "ID-ul cartii trebuie sa fie pozitiv!"
-            );
-        }
-
-        if (numeCititor == null || numeCititor.isBlank()) {
-            throw new DateInvalideException(
-                    "Numele cititorului nu poate fi gol!"
-            );
+                    "Numele cititorului nu poate fi gol!");
         }
 
         if (numeCititor.contains(";")) {
             throw new DateInvalideException(
-                    "Numele cititorului nu poate contine ;"
-            );
+                    "Numele cititorului nu poate contine ;");
         }
 
         if (dataImprumut == null) {
             throw new DateInvalideException(
-                    "Data imprumutului este obligatorie!"
-            );
+                    "Data imprumutului este obligatorie!");
         }
 
         this.idImprumut = idImprumut;
@@ -68,10 +49,7 @@ public class Imprumut {
     }
 
     /**
-     * Constructor utilizat la incarcarea
-     * imprumuturilor din fisiere.
-     *
-     * Permite restaurarea datei returnarii.
+     * Constructor pentru incarcarea din fisier.
      */
     public Imprumut(int idImprumut, int idCarte,
                     String numeCititor,
@@ -86,94 +64,84 @@ public class Imprumut {
         }
     }
 
-    // Metode GET
-
-    /**
-     * Returneaza ID-ul imprumutului.
-     */
     public int getIdImprumut() {
         return idImprumut;
     }
 
-    /**
-     * Returneaza ID-ul cartii.
-     */
     public int getIdCarte() {
         return idCarte;
     }
 
-    /**
-     * Returneaza numele cititorului.
-     */
     public String getNumeCititor() {
         return numeCititor;
     }
 
-    /**
-     * Returneaza data imprumutului.
-     */
     public LocalDate getDataImprumut() {
         return dataImprumut;
     }
 
-    /**
-     * Returneaza data returnarii.
-     */
     public LocalDate getDataReturnare() {
         return dataReturnare;
     }
 
     /**
-     * Inregistreaza returnarea cartii.
-     *
-     * @param dataReturnare data la care cartea
-     *                      este returnata
-     * @throws DateInvalideException daca data este invalida
-     */
-    public void returneazaCarte(LocalDate dataReturnare) {
-
-        if (dataReturnare == null ||
-                dataReturnare.isBefore(dataImprumut)) {
-
-            throw new DateInvalideException(
-                    "Data returnarii nu poate fi inaintea imprumutului!"
-            );
-        }
-
-        if (this.dataReturnare != null) {
-            throw new IllegalStateException(
-                    "Cartea a fost deja returnata!"
-            );
-        }
-
-        this.dataReturnare = dataReturnare;
-    }
-
-    /**
      * Verifica daca imprumutul este activ.
      *
-     * @return true daca imprumutul este activ,
-     *         false daca a fost returnat
+     * @return true daca nu a fost returnata cartea
      */
     public boolean esteActiv() {
         return dataReturnare == null;
     }
 
     /**
-     * Afiseaza informatiile despre imprumut.
+     * Inregistreaza returnarea unei carti.
      *
-     * @return informatiile imprumutului sub forma de text
+     * @param dataReturnare data returnarii
+     */
+    public void returneazaCarte(LocalDate dataReturnare) {
+
+        if (!esteActiv()) {
+            throw new IllegalStateException(
+                    "Cartea a fost deja returnata!");
+        }
+
+        if (dataReturnare == null ||
+                dataReturnare.isBefore(dataImprumut)) {
+            throw new DateInvalideException(
+                    "Data returnarii este invalida!");
+        }
+
+        this.dataReturnare = dataReturnare;
+    }
+
+    /**
+     * Returneaza descrierea imprumutului.
      */
     @Override
     public String toString() {
 
-        return "ID imprumut: " + idImprumut +
-                " | ID carte: " + idCarte +
-                " | Cititor: " + numeCititor +
-                " | Data imprumut: " + dataImprumut +
-                " | Data returnare: " +
-                (dataReturnare == null
-                        ? "Nereturnata"
-                        : dataReturnare.toString());
+        StringBuilder rezultat = new StringBuilder();
+
+        rezultat.append("ID imprumut: ")
+                .append(idImprumut);
+
+        rezultat.append(" | ID carte: ")
+                .append(idCarte);
+
+        rezultat.append(" | Cititor: ")
+                .append(numeCititor);
+
+        rezultat.append(" | Data imprumut: ")
+                .append(dataImprumut);
+
+        rezultat.append(" | Data returnare: ");
+
+        if (esteActiv()) {
+            rezultat.append("Nereturnata");
+        } else {
+            rezultat.append(dataReturnare);
+        }
+
+        return rezultat.toString();
     }
 }

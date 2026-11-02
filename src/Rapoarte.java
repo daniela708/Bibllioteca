@@ -1,39 +1,42 @@
 
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
- * Clasa Rapoarte genereaza rapoarte text
- * pe baza informatiilor din biblioteca.
+ * Clasa Rapoarte genereaza rapoarte
+ * despre carti si imprumuturi.
  */
 public class Rapoarte {
 
-    private static final Path DIRECTOR =
-            Path.of("rapoarte");
+    private static final String DIRECTOR = "rapoarte";
 
     /**
-     * Creeaza un fisier pentru un raport.
+     * Creeaza fisierul unui raport.
      */
     private static BufferedWriter creeazaRaport(
             String numeFisier) throws IOException {
 
-        Files.createDirectories(DIRECTOR);
+        File director = new File(DIRECTOR);
 
-        return Files.newBufferedWriter(
-                DIRECTOR.resolve(numeFisier),
-                StandardCharsets.UTF_8
-        );
+        if (!director.exists() && !director.mkdirs()) {
+            throw new IOException(
+                    "Nu s-a putut crea directorul rapoarte!");
+        }
+
+        File fisier = new File(director, numeFisier);
+
+        return new BufferedWriter(
+                new OutputStreamWriter(
+                        new FileOutputStream(fisier),
+                        StandardCharsets.UTF_8));
     }
 
     /**
-     * Genereaza raportul cartilor unui autor.
+     * Genereaza raportul dupa autor.
      */
     public static void raportAutor(
             Biblioteca biblioteca, String autor)
@@ -46,12 +49,11 @@ public class Rapoarte {
             writer.newLine();
             writer.write("Autor cautat: " + autor);
             writer.newLine();
-            writer.write("-----------------------------");
-            writer.newLine();
 
             int numar = 0;
 
             for (Carte carte : biblioteca.getCarti()) {
+
                 if (carte.getAutor().toLowerCase()
                         .contains(autor.toLowerCase())) {
 
@@ -61,18 +63,16 @@ public class Rapoarte {
                 }
             }
 
-            writer.write("-----------------------------");
-            writer.newLine();
             writer.write("Total carti gasite: " + numar);
+            writer.newLine();
         }
 
         System.out.println(
-                "Raportul dupa autor a fost generat!"
-        );
+                "Raportul dupa autor a fost generat!");
     }
 
     /**
-     * Genereaza raportul cartilor dintr-o categorie.
+     * Genereaza raportul dupa categorie.
      */
     public static void raportCategorie(
             Biblioteca biblioteca, String categorie)
@@ -85,12 +85,11 @@ public class Rapoarte {
             writer.newLine();
             writer.write("Categorie: " + categorie);
             writer.newLine();
-            writer.write("-----------------------------");
-            writer.newLine();
 
             int numar = 0;
 
             for (Carte carte : biblioteca.getCarti()) {
+
                 if (carte.getCategorie()
                         .equalsIgnoreCase(categorie)) {
 
@@ -100,19 +99,17 @@ public class Rapoarte {
                 }
             }
 
-            writer.write("-----------------------------");
-            writer.newLine();
             writer.write("Total carti gasite: " + numar);
+            writer.newLine();
         }
 
         System.out.println(
-                "Raportul dupa categorie a fost generat!"
-        );
+                "Raportul dupa categorie a fost generat!");
     }
 
     /**
      * Genereaza raportul imprumuturilor
-     * efectuate la o anumita data.
+     * dintr-o anumita zi.
      */
     public static void raportImprumuturi(
             Biblioteca biblioteca, LocalDate data)
@@ -123,9 +120,7 @@ public class Rapoarte {
 
             writer.write("RAPORT IMPRUMUTURI");
             writer.newLine();
-            writer.write("Data cautata: " + data);
-            writer.newLine();
-            writer.write("-----------------------------");
+            writer.write("Data: " + data);
             writer.newLine();
 
             int numar = 0;
@@ -133,8 +128,7 @@ public class Rapoarte {
             for (Imprumut imprumut :
                     biblioteca.getImprumuturi().values()) {
 
-                if (imprumut.getDataImprumut()
-                        .equals(data)) {
+                if (imprumut.getDataImprumut().equals(data)) {
 
                     writer.write(imprumut.toString());
                     writer.newLine();
@@ -142,37 +136,33 @@ public class Rapoarte {
                 }
             }
 
-            writer.write("-----------------------------");
-            writer.newLine();
             writer.write("Total imprumuturi: " + numar);
+            writer.newLine();
         }
 
         System.out.println(
-                "Raportul imprumuturilor a fost generat!"
-        );
+                "Raportul imprumuturilor a fost generat!");
     }
 
     /**
-     * Genereaza un raport general al bibliotecii.
-     * Utilizeaza un vector si o matrice de tip int.
+     * Genereaza raportul general al bibliotecii.
+     * Foloseste un vector si o matrice.
      */
     public static void raportGeneral(
             Biblioteca biblioteca) throws IOException {
 
         ArrayList<Carte> carti = biblioteca.getCarti();
 
-        // Vector pentru cartile pe perioade
-        int[] perioade = new int[4];
-
-        // Categorii distincte, ordonate
-        TreeSet<String> categorii = new TreeSet<>();
-
         int disponibile = 0;
         int imprumutate = 0;
 
+        int[] perioade = new int[4];
+
+        HashSet<String> categoriiSet = new HashSet<>();
+
         for (Carte carte : carti) {
 
-            categorii.add(carte.getCategorie());
+            categoriiSet.add(carte.getCategorie());
 
             if (carte.isDisponibila()) {
                 disponibile++;
@@ -193,17 +183,18 @@ public class Rapoarte {
             }
         }
 
-        ArrayList<String> listaCategorii =
-                new ArrayList<>(categorii);
+        ArrayList<String> categorii =
+                new ArrayList<>(categoriiSet);
 
-        // Matrice: disponibile / imprumutate
+        Collections.sort(categorii);
+
         int[][] matrice =
-                new int[listaCategorii.size()][2];
+                new int[categorii.size()][2];
 
         for (Carte carte : carti) {
-            int index = listaCategorii.indexOf(
-                    carte.getCategorie()
-            );
+
+            int index = categorii.indexOf(
+                    carte.getCategorie());
 
             if (carte.isDisponibila()) {
                 matrice[index][0]++;
@@ -217,7 +208,7 @@ public class Rapoarte {
 
             writer.write("RAPORT GENERAL BIBLIOTECA");
             writer.newLine();
-            writer.write("============================");
+            writer.write("=========================");
             writer.newLine();
 
             writer.write("Total carti: " + carti.size());
@@ -233,40 +224,43 @@ public class Rapoarte {
             writer.write("CARTI PE PERIOADE");
             writer.newLine();
 
-            writer.write("Inainte de 1900: " + perioade[0]);
-            writer.newLine();
+            String[] denumiri = {
+                    "Inainte de 1900",
+                    "1900-1949",
+                    "1950-1999",
+                    "2000-prezent"
+            };
 
-            writer.write("1900-1949: " + perioade[1]);
-            writer.newLine();
-
-            writer.write("1950-1999: " + perioade[2]);
-            writer.newLine();
-
-            writer.write("2000-prezent: " + perioade[3]);
-            writer.newLine();
+            for (int i = 0; i < perioade.length; i++) {
+                writer.write(
+                        denumiri[i] + ": " + perioade[i]);
+                writer.newLine();
+            }
 
             writer.newLine();
             writer.write("CARTI PE CATEGORII");
             writer.newLine();
 
-            for (int i = 0; i < listaCategorii.size(); i++) {
+            for (int i = 0; i < categorii.size(); i++) {
+
                 writer.write(
-                        listaCategorii.get(i) +
+                        categorii.get(i) +
                                 " | Disponibile: " + matrice[i][0] +
-                                " | Imprumutate: " + matrice[i][1]
-                );
+                                " | Imprumutate: " + matrice[i][1]);
+
                 writer.newLine();
             }
 
             writer.newLine();
+
             writer.write(
                     "Total imprumuturi inregistrate: " +
-                            biblioteca.getImprumuturi().size()
-            );
+                            biblioteca.getImprumuturi().size());
+
+            writer.newLine();
         }
 
         System.out.println(
-                "Raportul general a fost generat!"
-        );
+                "Raportul general a fost generat!");
     }
 }
